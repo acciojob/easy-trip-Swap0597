@@ -67,10 +67,11 @@ public class AirportRepository{
     public String bookATicket(Integer flightId, Integer passengerId) {
         Flight flight = flightMap.get(flightId);
         int currBooking = currBookingInFlight.get(flight);
-        int maxCap = flightMap.get(flightId).getMaxCapacity();
-        if(currBooking == maxCap){return "FAILURE";}
+        int maxCap = flight.getMaxCapacity();
 
-        // checking passenger booked flight or not
+        if(currBooking >= maxCap){return "FAILURE";}
+
+        // checking  passenger already  booked flight or not
         List<Passenger> passengerList = flightPassengerListMap.get(flight);
         for(int i=0; i<passengerList.size(); i++){
             if(passengerList.get(i).getPassengerId() == passengerId){
