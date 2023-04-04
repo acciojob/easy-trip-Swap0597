@@ -43,6 +43,10 @@ public class AirportRepository{
 
     public void addFlight(Flight flight) {
         flightMap.put(flight.getFlightId(), flight);
+        List<Passenger> passengerList = new ArrayList<>();
+        flightPassengerListMap.put(flight, passengerList);
+        currBookingInFlight.put(flight, 0);
+
     }
 
     public double getShortestDurationOfPossibleBetweenTwoCities(City fromCity, City toCity) {
@@ -65,8 +69,19 @@ public class AirportRepository{
     }
 
     public String bookATicket(Integer flightId, Integer passengerId) {
-        Flight flight = flightMap.get(flightId);
-        int currBooking = currBookingInFlight.get(flight);
+        Flight flight;
+        int currBooking;
+        if(flightMap.containsKey(flightId)){
+            flight = flightMap.get(flightId);
+        } else{
+            return "FAILURE";
+        }
+        if(currBookingInFlight.containsKey(flight)){
+            currBooking = currBookingInFlight.get(flight);
+        } else{
+            return "FAILURE";
+        }
+
         int maxCap = flight.getMaxCapacity();
 
         if(currBooking >= maxCap){return "FAILURE";}
@@ -125,16 +140,19 @@ public class AirportRepository{
     }
 
     public int calculateRevenueOfAFlight(Integer flightId) {
-        Flight flight = flightMap.get(flightId);
-        int currNoOfPessenger = currBookingInFlight.get(flight);
-        return calculateRevenue(currNoOfPessenger);
+        if(flightMap.containsKey(flightId)){
+            Flight flight = flightMap.get(flightId);
+            int currNoOfPessenger = currBookingInFlight.get(flight);
+            return calculateRevenue(currNoOfPessenger);
+        }
+        return 0;
     }
 
     private int calculateRevenue(int currNoOfPessenger) {
         if(currNoOfPessenger == 1){
             return 3000 + 0 * 50;
         }
-        int sAns = calculateFlightFare(currNoOfPessenger-1);
+        int sAns = calculateRevenue(currNoOfPessenger-1);
         return sAns += 3000 + (currNoOfPessenger-1) * 50;
     }
 
